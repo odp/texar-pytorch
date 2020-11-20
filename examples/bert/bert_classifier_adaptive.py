@@ -256,6 +256,8 @@ def main() -> None:
             for epoch in adaptdl.torch.remaining_epochs_until(
                                          config_data.max_train_epoch):
                 _train_epoch(epoch)
+                if args.do_eval:
+                    _eval_epoch()
             states = {
                 'model': model.state_dict(),
                 'optimizer': optim.state_dict(),
@@ -264,9 +266,6 @@ def main() -> None:
             if adaptdl.env.replica_rank() == 0:
                 # Only allow writes by the main replica
                 torch.save(states, os.path.join(OUTPUT_DIR, 'model.ckpt'))
-
-    if args.do_eval:
-        _eval_epoch()
 
     if args.do_test:
         _test_epoch()
